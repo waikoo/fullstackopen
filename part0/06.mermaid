@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    server->>browser: returns new notes array
+    deactivate server
+
+    Note left of browser: newly updated array is re-rendered
