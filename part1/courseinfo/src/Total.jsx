@@ -1,6 +1,6 @@
-export default function Total({ total }) {
+export default function Total({ parts }) {
   return (
-    <p>Number of exercises {total}</p>
+    <p>Number of exercises {parts.reduce((acc, part) => acc + part.exercises, 0)}</p>
   )
 }
 
