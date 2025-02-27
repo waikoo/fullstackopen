@@ -4,8 +4,8 @@ const Weather = ({ capital, temperature, wind, iconSrc, iconAlt }) => {
     <div>
       <h2>Weather in {capital}</h2>
       <p>Temperature: {temperature} Celsius</p>
-      <p>Wind: {wind} m/s</p>
       <img src={iconSrc} alt={iconAlt} />
+      <p>Wind: {wind} m/s</p>
     </div>
   )
 }
