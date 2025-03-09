@@ -5,8 +5,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "The Jetsons",
-  "author": "Judy Jetson",
-  "url": "https://en.wikipedia.org/wiki/Judy_Jetson",
-  "likes": 5
+  "title": "The Flintstones",
+  "author": "Barney Rubble",
+  "url": "http://www.flintstones.com",
+  "likes": 14
 }
