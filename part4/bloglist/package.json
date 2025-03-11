@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch index.js",
-    "test": "node --test",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development node --watch index.js",
+    "test": "cross-env NODE_ENV=test node --test",
+    "test:only": "cross-env NODE_ENV=test node --test --test-only",
     "lint": "eslint ."
   },
   "author": "waikoo",
@@ -20,7 +22,9 @@
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@stylistic/eslint-plugin-js": "^4.2.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9.22.0",
-    "globals": "^16.0.0"
+    "globals": "^16.0.0",
+    "supertest": "^7.0.0"
   }
 }
