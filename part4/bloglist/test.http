@@ -3,10 +3,11 @@ GET http://localhost:3003/api/blogs
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhcm5leSIsImlkIjoiNjdkMjE4Y2YyYzU3YjI2YjUwODFlMWEzIiwiaWF0IjoxNzQxOTg0OTg0fQ.h4SR7DfR23i-61gR5gTfyqsswzYB8w_1K6tkzhrq9Mg
 
 {
-  "title": "The Flintstones",
-  "author": "Barney Rubble",
-  "url": "http://www.flintstones.com",
-  "likes": 14
+  "title": "Signed-in Blog",
+  "author": "Pen Signed-Obi",
+  "url": "http://www.lamy.com",
+  "likes": 8
 }
