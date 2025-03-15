@@ -3,21 +3,46 @@ const assert = require('node:assert')
 const Blog = require('../models/blog')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const jwt = require('jsonwebtoken')
 const app = require('../app')
 const api = supertest(app)
 const helper = require('./test_helper')
+let token
+let withAuth
+
 
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  for (let blog of helper.initialBlogs) {
-    let blogObject = new Blog(blog)
-    await blogObject.save()
-  }
+  const username = 'barney'
+  const password = 'bambam'
+
+  await api
+    .post('/api/users')
+    .send({ username, password })
+
+  const response = await api
+    .post('/api/login')
+    .send({ username, password })
+
+  token = response.body.token
+  withAuth = supertest.agent(app).set('Authorization', `Bearer ${response.body.token}`)
+
+  await Promise.all(helper.initialBlogs.map(async (blog) => {
+    let blogObject = new Blog({
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes,
+      user: jwt.decode(token).id
+    })
+    return blogObject.save()
+  }))
+
 })
 
 test('returns the correct amount of blog posts in JSON format', async () => {
-  const response = await api
+  const response = await withAuth
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -26,10 +51,13 @@ test('returns the correct amount of blog posts in JSON format', async () => {
 })
 
 test('unique identifier is named "id"', async () => {
-  const response = await api
+  const response = await withAuth
     .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
 
-  assert(Object.hasOwn(response.body[0], 'id'),)
+  assert(response.body.length > 0)
+  assert(Object.hasOwn(response.body[0], 'id'))
 })
 
 test('POST request creates blog post in db', async () => {
@@ -42,13 +70,13 @@ test('POST request creates blog post in db', async () => {
     likes: 99
   }
 
-  await api
+  await withAuth
     .post('/api/blogs')
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const response = await api.get('/api/blogs')
+  const response = await withAuth.get('/api/blogs')
   const contents = response.body.map(blog => blog.url)
   assert.strictEqual(response.body.length, initialLength + 1)
   assert(contents.includes('https://www.star-wars.com'))
@@ -61,11 +89,11 @@ test('if the likes property is missing, it defaults to 0', async () => {
     url: 'https://www.we-got-some-work-todo-now2.com',
   }
 
-  await api
+  await withAuth
     .post('/api/blogs')
     .send(noLikePropBlog)
 
-  const response = await api.get('/api/blogs')
+  const response = await withAuth.get('/api/blogs')
   const lastBlog = response.body.at(-1)
   assert(lastBlog.likes === 0)
 })
@@ -77,7 +105,7 @@ test('if title property is missing, the backend responds with 400', async () => 
     likes: '11'
   }
 
-  const response = await api
+  const response = await withAuth
     .post('/api/blogs')
     .send(noTitleBlog)
     .expect(400)
@@ -92,7 +120,7 @@ test('if url property is missing, the backend responds with 400', async () => {
     likes: '11'
   }
 
-  const response = await api
+  const response = await withAuth
     .post('/api/blogs')
     .send(noUrlBlog)
     .expect(400)
@@ -101,7 +129,7 @@ test('if url property is missing, the backend responds with 400', async () => {
 })
 
 test('on a delete request with an id, there is one less blog in db', async () => {
-  const response = await api
+  const response = await withAuth
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -109,11 +137,11 @@ test('on a delete request with an id, there is one less blog in db', async () =>
   const initialLength = response.body.length
   const firstBlogId = response.body[0].id
 
-  await api
+  await withAuth
     .delete(`/api/blogs/${firstBlogId}`)
     .expect(204)
 
-  const responseAfterDeletion = await api
+  const responseAfterDeletion = await withAuth
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -122,7 +150,7 @@ test('on a delete request with an id, there is one less blog in db', async () =>
 })
 
 test('on a put request with an id, the blog is updated', async () => {
-  const response = await api
+  const response = await withAuth
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -136,13 +164,13 @@ test('on a put request with an id, the blog is updated', async () => {
     likes: 2
   }
 
-  await api
+  await withAuth
     .put(`/api/blogs/${firstBlogId}`)
     .send(newBlog)
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const responseAfterUpdate = await api
+  const responseAfterUpdate = await withAuth
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
@@ -153,6 +181,23 @@ test('on a put request with an id, the blog is updated', async () => {
   assert.strictEqual(responseAfterUpdate.body[0].likes, 2)
 })
 
+test.only('adding a blog fails if not signed in, with a 401', async () => {
+  const newBlog = {
+    title: 'Tom & Jerry',
+    author: 'Idont Know',
+    url: 'https://www.tomandjerry.com',
+    likes: 0
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
+
+})
+
 after(async () => {
+  console.log('Closing resources...')
   await mongoose.connection.close()
+  console.log('MongoDB connection closed')
 })
