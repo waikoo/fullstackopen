@@ -1,20 +1,18 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
-const NewBlogForm = ({ setFeedbackMessage }) => {
-
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+const NewBlogForm = ({ setFeedbackMessage, createBlog }) => {
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    author: '',
+    url: '',
+  })
 
   const postNewBlog = async (e) => {
     e.preventDefault()
     try {
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      await blogService.create({ title, author, url })
-      setFeedbackMessage({ type: 'success', message: `the blog ${title} by ${author} successfully added` })
+      setNewBlog({ title: '', author: '', url: '' })
+      createBlog(newBlog)
+      setFeedbackMessage({ type: 'success', message: `the blog ${newBlog.title} by ${newBlog.author} successfully added` })
     } catch (exception) {
       setFeedbackMessage({ type: 'error', message: exception.message })
     } finally {
@@ -24,14 +22,16 @@ const NewBlogForm = ({ setFeedbackMessage }) => {
     }
   }
 
+
+
   return (
     <>
       <h2>create new</h2>
-      <form>
-        <div>title: <input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
-        <div>author: <input value={author} onChange={(e) => setAuthor(e.target.value)} /></div>
-        <div>url: <input value={url} onChange={(e) => setUrl(e.target.value)} /></div>
-        <button onClick={postNewBlog}>create</button>
+      <form onSubmit={postNewBlog}>
+        <div>title: <input value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} /></div>
+        <div>author: <input value={newBlog.author} onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })} /></div>
+        <div>url: <input value={newBlog.url} onChange={(e) => setNewBlog({ ...newBlog, url: e.target.value })} /></div>
+        <button>create</button>
       </form>
     </>
   )
