@@ -28,9 +28,9 @@ const NewBlogForm = ({ setFeedbackMessage, createBlog }) => {
     <>
       <h2>create new</h2>
       <form onSubmit={postNewBlog}>
-        <div>title: <input value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} /></div>
-        <div>author: <input value={newBlog.author} onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })} /></div>
-        <div>url: <input value={newBlog.url} onChange={(e) => setNewBlog({ ...newBlog, url: e.target.value })} /></div>
+        <div>title: <input value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} placeholder="title" /></div>
+        <div>author: <input value={newBlog.author} onChange={(e) => setNewBlog({ ...newBlog, author: e.target.value })} placeholder="author" /></div>
+        <div>url: <input value={newBlog.url} onChange={(e) => setNewBlog({ ...newBlog, url: e.target.value })} placeholder="url" /></div>
         <button>create</button>
       </form>
     </>

@@ -11,7 +11,7 @@ const Blog = ({ blog, incrementLike, handleRemove }) => {
 
   return (
     <div style={blogStyle}>
-      {blog.title} {blog.author}
+      <span>{blog.title}</span> <span>{blog.author}</span>
       {showDetails && (
         <>
           <p>{blog.url}</p>
