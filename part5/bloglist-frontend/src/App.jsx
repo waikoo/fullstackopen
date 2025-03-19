@@ -101,9 +101,11 @@ const App = () => {
             <NewBlogForm setFeedbackMessage={setFeedbackMessage} createBlog={newBlog} />
           </Togglable>
 
-          {sortedBlogsByLikes.map(blog =>
-            <Blog key={blog.id} blog={blog} incrementLike={incrementLike} handleRemove={handleRemove} />
-          )}
+          <div data-testid="bloglist">
+            {sortedBlogsByLikes.map(blog =>
+              <Blog key={blog.id} blog={blog} incrementLike={incrementLike} handleRemove={handleRemove} user={user} />
+            )}
+          </div>
         </div>
       )}
     </div>

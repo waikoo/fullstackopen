@@ -1,0 +1,16 @@
+{
+  "name": "playwright",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "waikoo",
+  "license": "MIT",
+  "description": "",
+  "scripts": {
+    "test": "playwright test --project=chromium --project=firefox",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.10"
+  }
+}

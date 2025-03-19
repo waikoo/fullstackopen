@@ -22,17 +22,17 @@ const LoginForm = ({ username, password, setUsername, setPassword, setUser, setF
   return (
     <div>
       <h1>log in to application</h1>
-      <form>
+      <form data-testid="login-form">
         <div>
           <label>
             username
-            <input onChange={({ target }) => setUsername(target.value)} />
+            <input data-testid="username" onChange={({ target }) => setUsername(target.value)} />
           </label>
         </div>
 
         <div><label>
           password
-          <input onChange={({ target }) => setPassword(target.value)} />
+          <input data-testid="password" onChange={({ target }) => setPassword(target.value)} />
         </label></div>
         <button onClick={(e) => handleLogin(e)}>login</button>
       </form>
